@@ -1,0 +1,294 @@
+<title>Quarterly Forecast vs Actual — Q3 2026</title>
+<style>
+  :root{
+    --ground:#F4F6F8; --panel:#FFFFFF; --ink:#16202E; --ink-soft:#44525F;
+    --mute:#7C8896; --line:#E2E7EC; --line-strong:#CBD3DB;
+    --teal:#0E6E6B; --teal-deep:#0A4F4D; --teal-wash:#E4F0EF;
+    --good:#2F8F5B; --good-wash:#E7F2EC;
+    --bad:#C14434; --bad-wash:#F6E7E4; --amber:#C2882A;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);
+    font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:960px;margin:0 auto;padding:30px 24px 60px}
+  .tnum{font-variant-numeric:tabular-nums}
+  h1,h2,h3{margin:0;text-wrap:balance}
+
+  .masthead{border-bottom:2px solid var(--ink);padding-bottom:16px}
+  .eyebrow{text-transform:uppercase;letter-spacing:.14em;font-size:11px;
+    font-weight:600;color:var(--teal);margin-bottom:6px}
+  h1{font-family:var(--serif);font-size:30px;font-weight:600;letter-spacing:-.01em;line-height:1.12}
+  .lede{color:var(--ink-soft);margin-top:8px;font-size:13.5px;max-width:68ch}
+
+  .section-label{text-transform:uppercase;letter-spacing:.12em;font-size:11px;
+    font-weight:700;color:var(--mute);margin:30px 0 14px;display:flex;align-items:center;gap:10px}
+  .section-label::after{content:"";flex:1;height:1px;background:var(--line)}
+
+  .cat{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:22px 24px;margin-bottom:18px}
+  .cat-head{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px}
+  .cat-head h2{font-size:18px;font-weight:700}
+  .cat-head .best{font-size:12px;color:var(--mute)}
+  .cat-head .best b{color:var(--teal-deep)}
+
+  .cmp{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:16px}
+  .stat{border:1px solid var(--line);border-radius:10px;padding:14px 16px;background:#FCFDFD}
+  .stat .k{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--mute);font-weight:700}
+  .stat .v{font-family:var(--serif);font-size:30px;font-weight:600;margin-top:6px;letter-spacing:-.01em}
+  .stat .u{font-family:var(--sans);font-size:12px;color:var(--mute);font-weight:600;margin-left:4px}
+  .v.fore{color:var(--teal-deep)} .v.act{color:var(--ink)}
+  .v.err-pos{color:var(--good)} .v.err-neg{color:var(--bad)}
+
+  /* bar comparison */
+  .bars{margin-top:18px}
+  .barrow{display:grid;grid-template-columns:72px 1fr 120px;align-items:center;gap:12px;margin:8px 0;font-size:12.5px}
+  .barrow .lab{color:var(--ink-soft);font-weight:600}
+  .barwrap{position:relative;height:22px;background:var(--line);border-radius:5px;overflow:hidden}
+  .barwrap .zero{position:absolute;top:0;bottom:0;width:1.5px;background:var(--line-strong)}
+  .bar{position:absolute;top:0;bottom:0;border-radius:5px}
+  .bar.fore{background:var(--teal)} .bar.act{background:var(--ink)}
+  .barval{text-align:right;color:var(--ink);font-variant-numeric:tabular-nums}
+
+  .epill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;
+    padding:4px 12px;border-radius:20px}
+  .epill.lo{background:var(--good-wash);color:var(--good)}
+  .epill.mid{background:#FBF1DD;color:var(--amber)}
+  .epill.hi{background:var(--bad-wash);color:var(--bad)}
+
+  table{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:16px}
+  th,td{padding:8px 8px;text-align:right}
+  th:first-child,td:first-child{text-align:left}
+  thead th{font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--mute);
+    font-weight:700;border-bottom:1px solid var(--line-strong)}
+  tbody td{border-bottom:1px solid var(--line)}
+  tbody tr:last-child td{border-bottom:none}
+  .in-yes{color:var(--good);font-weight:700}
+  .in-no{color:var(--bad);font-weight:700}
+  .rowbest td{background:var(--teal-wash)}
+  .rowbest td:first-child{font-weight:700;color:var(--teal-deep)}
+
+  .note{display:flex;gap:10px;align-items:flex-start;background:#FBF8F1;border:1px solid #EFE4CC;
+    border-radius:10px;padding:12px 14px;margin-top:14px;font-size:12px;color:#7a5e20}
+  .foot{margin-top:28px;font-size:11px;color:var(--mute);line-height:1.7;
+    border-top:1px solid var(--line);padding-top:16px}
+  .foot b{color:var(--ink-soft)}
+  @media(max-width:680px){.cmp{grid-template-columns:1fr}.barrow{grid-template-columns:60px 1fr 92px}}
+</style>
+
+<div class="wrap">
+  <header class="masthead">
+    <div class="eyebrow">Treasury Liquidity Desk · Quarterly backtest</div>
+    <h1 id="h1">Forecast vs. actual — latest available quarter</h1>
+    <p class="lede">Models trained on all complete calendar quarters <b>up to the quarter before</b> the latest
+      available one, then asked to forecast that quarter blind. Below: the forecast, the actual that printed,
+      the difference, and the absolute % error. Net flows in ₹ crore.</p>
+  </header>
+
+  <div class="section-label" id="qlabel">Quarter</div>
+  <div id="cats"></div>
+
+  <div class="section-label">All models — side by side</div>
+  <div class="cat" style="padding-top:18px">
+    <table id="tbl"></table>
+    <div class="note">
+      <span>⚠</span>
+      <div><b>On % error:</b> quarterly net flow can be small or near zero, which inflates percentage error even
+      when the rupee miss is modest (e.g. Overnight actual was only ₹2,477 cr). Read the <b>₹ difference</b> and
+      <b>interval capture</b> alongside the %. A forecast that lands inside its 80/95% band is behaving as designed
+      even when the point error looks large.</div>
+    </div>
+  </div>
+
+  <div class="foot" id="foot"></div>
+</div>
+
+<script id="data" type="application/json">{
+  "models": {
+    "liquid": {
+      "seasonal_naive_q": {
+        "WAPE": 0.661861948723588,
+        "MAE_cr": 29365.274047721286,
+        "cov80": 0.875
+      },
+      "sarimax_q": {
+        "WAPE": 0.8321704699334285,
+        "MAE_cr": 36921.46670637757,
+        "cov80": 0.75
+      }
+    },
+    "overnight": {
+      "seasonal_naive_q": {
+        "WAPE": 1.1034575717737665,
+        "MAE_cr": 10149.937956052838,
+        "cov80": 1.0
+      },
+      "sarimax_q": {
+        "WAPE": 0.8995865175965958,
+        "MAE_cr": 8274.670067313735,
+        "cov80": 1.0
+      }
+    }
+  },
+  "forward": {
+    "liquid": {
+      "quarter": "2026Q4",
+      "point": 28016.4471899699,
+      "lo80": -30025.719752660123,
+      "hi80": 86058.61413259992,
+      "lo95": -60751.38693449873,
+      "hi95": 116784.28131443851,
+      "buffer_p95": 46479.86757293795
+    },
+    "overnight": {
+      "quarter": "2026Q4",
+      "point": -13319.705948720253,
+      "lo80": -39085.551442371725,
+      "hi80": 12446.139544931222,
+      "lo95": -52725.16613971953,
+      "hi95": 26085.754242279017,
+      "buffer_p95": 46389.81061805044
+    }
+  },
+  "validation": {
+    "liquid": {
+      "seasonal_naive_q": {
+        "quarter": "2026Q3",
+        "actual": 43256.9434546501,
+        "point": -40037.44959296981,
+        "err": 83294.3930476199,
+        "ape": 1.9255727842847805,
+        "lo80": -95716.18007320954,
+        "hi80": 15641.280887269917,
+        "lo95": -125190.71956678311,
+        "hi95": 45115.82038084347,
+        "in80": false,
+        "in95": true
+      },
+      "sarimax_q": {
+        "quarter": "2026Q3",
+        "actual": 43256.9434546501,
+        "point": -66449.28081290047,
+        "err": 109706.22426755057,
+        "ape": 2.5361529388354693,
+        "lo80": -104973.20333665173,
+        "hi80": -27925.35828914921,
+        "lo95": -125366.5360523941,
+        "hi95": -7532.025573406849,
+        "in80": false,
+        "in95": false
+      }
+    },
+    "overnight": {
+      "seasonal_naive_q": {
+        "quarter": "2026Q3",
+        "actual": 2477.102641739133,
+        "point": 18095.439218700172,
+        "err": -15618.33657696104,
+        "ape": 6.305082524152355,
+        "lo80": -7989.501708640924,
+        "hi80": 44180.380146041265,
+        "lo95": -21798.035324961595,
+        "hi95": 57988.91376236193,
+        "in80": true,
+        "in95": true
+      },
+      "sarimax_q": {
+        "quarter": "2026Q3",
+        "actual": 2477.102641739133,
+        "point": 2763.965310200002,
+        "err": -286.8626684608689,
+        "ape": 0.11580572545813739,
+        "lo80": -18079.391857162722,
+        "hi80": 23607.322477562724,
+        "lo95": -29113.19863955916,
+        "hi95": 34641.129259959154,
+        "in80": true,
+        "in95": true
+      }
+    }
+  }
+}</script>
+<script>
+const D = JSON.parse(document.getElementById('data').textContent);
+const V = D.validation, M = D.models;
+const fmt = n => (n<0?'−':'') + Math.abs(Math.round(n)).toLocaleString('en-IN');
+const fmtsign = n => (n<0?'−':'+') + Math.abs(Math.round(n)).toLocaleString('en-IN');
+const nm = {seasonal_naive_q:'Seasonal-naive (lag 4)', sarimax_q:'SARIMAX (seasonal, P=4)'};
+const catName = {liquid:'Liquid Fund', overnight:'Overnight Fund'};
+
+// which quarter
+const anyV = V.liquid.seasonal_naive_q;
+const Q = anyV.quarter;
+document.getElementById('qlabel').textContent = Q + " · forecast vs actual";
+document.getElementById('h1').textContent = `Forecast vs. actual — ${Q}`;
+
+// pick best model per category by |error|
+function best(cat){
+  const m = Object.keys(V[cat]);
+  return m.reduce((a,b)=> Math.abs(V[cat][b].err) < Math.abs(V[cat][a].err) ? b : a);
+}
+function epillClass(ape){ return ape<0.25?'lo':ape<1?'mid':'hi'; }
+
+function catBlock(cat){
+  const bm = best(cat); const v = V[cat][bm];
+  const actual = v.actual, fore = v.point, err = v.err, ape = v.ape;
+  const errCls = err>=0 ? 'err-pos':'err-neg';
+  // bar scaling (symmetric around zero over the two values + interval)
+  const mx = Math.max(Math.abs(actual),Math.abs(fore),Math.abs(v.lo95),Math.abs(v.hi95))*1.1;
+  const bar = (val,cls)=>{ const w=Math.abs(val)/mx*50; const left=val>=0?50:50-w;
+    return `<div class="barwrap"><div class="zero" style="left:50%"></div>
+      <div class="bar ${cls}" style="left:${left}%;width:${w}%"></div></div>`; };
+  return `<div class="cat">
+    <div class="cat-head">
+      <h2>${catName[cat]}</h2>
+      <div class="best">best model: <b>${nm[bm]}</b> · rolling-8q WAPE ${M[cat][bm].WAPE.toFixed(2)}</div>
+    </div>
+    <div class="cmp">
+      <div class="stat"><div class="k">Forecast</div><div class="v fore">${fmt(fore)}<span class="u">₹cr</span></div></div>
+      <div class="stat"><div class="k">Actual</div><div class="v act">${fmt(actual)}<span class="u">₹cr</span></div></div>
+      <div class="stat"><div class="k">Difference</div><div class="v ${errCls}">${fmtsign(err)}<span class="u">₹cr</span></div>
+        <div style="margin-top:8px"><span class="epill ${epillClass(ape)}">${(ape*100).toFixed(1)}% abs error</span></div></div>
+    </div>
+    <div class="bars">
+      <div class="barrow"><div class="lab">Forecast</div>${bar(fore,'fore')}<div class="barval">${fmt(fore)}</div></div>
+      <div class="barrow"><div class="lab">Actual</div>${bar(actual,'act')}<div class="barval">${fmt(actual)}</div></div>
+    </div>
+    <div style="margin-top:10px;font-size:12px;color:var(--ink-soft)">
+      80% interval [${fmt(v.lo80)}, ${fmt(v.hi80)}] — actual
+      <b class="${v.in80?'in-yes':'in-no'}">${v.in80?'inside':'outside'}</b> ·
+      95% interval [${fmt(v.lo95)}, ${fmt(v.hi95)}] — actual
+      <b class="${v.in95?'in-yes':'in-no'}">${v.in95?'inside':'outside'}</b></div>
+  </div>`;
+}
+document.getElementById('cats').innerHTML =
+  ['liquid','overnight'].map(catBlock).join('');
+
+// full table
+(function(){
+  let s = `<thead><tr><th>Category</th><th>Model</th><th>Forecast</th><th>Actual</th>
+    <th>Difference</th><th>Abs % err</th><th>In 80%</th><th>In 95%</th></tr></thead><tbody>`;
+  ['liquid','overnight'].forEach(cat=>{
+    const bm = best(cat);
+    Object.keys(V[cat]).forEach(mk=>{
+      const v = V[cat][mk]; const rb = (mk===bm);
+      s += `<tr class="${rb?'rowbest':''}">
+        <td>${rb?catName[cat]:''}</td><td>${nm[mk]}</td>
+        <td class="tnum">${fmt(v.point)}</td>
+        <td class="tnum">${fmt(v.actual)}</td>
+        <td class="tnum">${fmtsign(v.err)}</td>
+        <td class="tnum">${(v.ape*100).toFixed(1)}%</td>
+        <td class="${v.in80?'in-yes':'in-no'}">${v.in80?'✓':'✗'}</td>
+        <td class="${v.in95?'in-yes':'in-no'}">${v.in95?'✓':'✗'}</td></tr>`;
+    });
+  });
+  document.getElementById('tbl').innerHTML = s + '</tbody>';
+})();
+
+document.getElementById('foot').innerHTML =
+  `<b>Method.</b> Calendar quarters (align with advance-tax / fiscal quarter-ends). Target: AMFI monthly category
+   net flows summed to complete quarters. The latest available complete quarter is <b>${Q}</b>; training used every
+   quarter before it. Point + 80/95% prediction intervals from each model's predictive distribution (seasonal lag = 4).
+   Sources: AMFI, RBI, NSE. Not investment advice.`;
+</script>

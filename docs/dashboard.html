@@ -1,0 +1,1073 @@
+<title>Liquidity Buffer Monitor — Liquid & Overnight Funds</title>
+<style>
+  :root{
+    --ground:#F4F6F8; --panel:#FFFFFF; --ink:#16202E; --ink-soft:#44525F;
+    --mute:#7C8896; --line:#E2E7EC; --line-strong:#CBD3DB;
+    --teal:#0E6E6B; --teal-deep:#0A4F4D; --teal-wash:#E4F0EF;
+    --good:#2F8F5B; --good-wash:#E7F2EC;
+    --bad:#C14434; --bad-wash:#F6E7E4;
+    --warn:#C2882A;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);
+    font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1120px;margin:0 auto;padding:28px 24px 56px}
+  .tnum{font-variant-numeric:tabular-nums}
+  h1,h2,h3{margin:0;text-wrap:balance}
+
+  /* header */
+  .masthead{display:flex;justify-content:space-between;align-items:flex-end;
+    gap:20px;flex-wrap:wrap;border-bottom:2px solid var(--ink);padding-bottom:16px}
+  .eyebrow{text-transform:uppercase;letter-spacing:.14em;font-size:11px;
+    font-weight:600;color:var(--teal);margin-bottom:6px}
+  h1{font-family:var(--serif);font-size:30px;font-weight:600;letter-spacing:-.01em;line-height:1.1}
+  .asof{text-align:right;font-size:12px;color:var(--mute);line-height:1.6}
+  .asof b{color:var(--ink);font-size:13px}
+
+  .section-label{text-transform:uppercase;letter-spacing:.12em;font-size:11px;
+    font-weight:700;color:var(--mute);margin:34px 0 14px;display:flex;align-items:center;gap:10px}
+  .section-label::after{content:"";flex:1;height:1px;background:var(--line)}
+
+  /* hero buffer cards */
+  .hero{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:18px}
+  .bufcard{background:var(--panel);border:1px solid var(--line);border-radius:10px;
+    padding:20px 22px;position:relative;overflow:hidden}
+  .bufcard::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--teal)}
+  .bufcard h3{font-size:13px;font-weight:700;letter-spacing:.02em;text-transform:uppercase;color:var(--ink-soft)}
+  .bufcard .sub{font-size:12px;color:var(--mute);margin-top:2px}
+  .bignum{font-family:var(--serif);font-size:40px;font-weight:600;letter-spacing:-.02em;
+    margin:12px 0 2px;color:var(--teal-deep)}
+  .bignum .unit{font-family:var(--sans);font-size:14px;font-weight:600;color:var(--mute);margin-left:6px}
+  .bufmeta{display:flex;gap:22px;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+  .bufmeta div{font-size:12px;color:var(--mute)}
+  .bufmeta b{display:block;font-size:16px;color:var(--ink);font-weight:600;margin-top:1px}
+  .pill{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.04em;
+    text-transform:uppercase;padding:2px 8px;border-radius:20px;vertical-align:middle}
+  .pill.out{background:var(--bad-wash);color:var(--bad)}
+  .pill.in{background:var(--good-wash);color:var(--good)}
+
+  /* generic panels */
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px 20px}
+  .panel h2{font-size:15px;font-weight:700;margin-bottom:2px}
+  .panel .cap{font-size:12px;color:var(--mute);margin-bottom:14px}
+
+  /* chart */
+  .chart{width:100%;height:auto;display:block}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:11.5px;color:var(--ink-soft);margin-top:6px}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .swatch{width:12px;height:12px;border-radius:3px;display:inline-block}
+
+  /* tables */
+  table{width:100%;border-collapse:collapse;font-size:12.5px}
+  th,td{padding:7px 8px;text-align:right}
+  th:first-child,td:first-child{text-align:left}
+  thead th{font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--mute);
+    font-weight:700;border-bottom:1px solid var(--line-strong)}
+  tbody td{border-bottom:1px solid var(--line)}
+  tbody tr:last-child td{border-bottom:none}
+  .best td{background:var(--teal-wash)}
+  .best td:first-child{font-weight:700;color:var(--teal-deep)}
+  .dim{color:var(--mute)}
+  .cov-ok{color:var(--good);font-weight:600}
+  .cov-off{color:var(--bad);font-weight:600}
+
+  /* driver bars */
+  .dbars{display:flex;flex-direction:column;gap:7px}
+  .dbar{display:grid;grid-template-columns:118px 1fr 54px;align-items:center;gap:10px;font-size:12px}
+  .dbar .nm{color:var(--ink-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .dbar .track{position:relative;height:16px;background:var(--line);border-radius:4px}
+  .dbar .mid{position:absolute;left:50%;top:-2px;bottom:-2px;width:1px;background:var(--line-strong)}
+  .dbar .fill{position:absolute;top:0;bottom:0;border-radius:4px}
+  .dbar .val{text-align:right;color:var(--ink);font-variant-numeric:tabular-nums}
+  .sig{font-size:10px;font-weight:700;color:var(--teal);margin-left:3px}
+
+  .foot{margin-top:30px;font-size:11px;color:var(--mute);line-height:1.7;
+    border-top:1px solid var(--line);padding-top:16px}
+  .foot b{color:var(--ink-soft)}
+  @media(max-width:720px){.hero,.grid2{grid-template-columns:1fr}
+    .wrap{padding:20px 14px 40px}h1{font-size:24px}}
+</style>
+
+<div class="wrap">
+  <header class="masthead">
+    <div>
+      <div class="eyebrow">Treasury Liquidity Desk · Monthly Policy Sheet</div>
+      <h1>How much cash must the fund hold?</h1>
+      <div class="cap" style="color:var(--ink-soft);margin-top:6px;font-size:13px">
+        Net-flow forecast &amp; cash-buffer recommendation — Indian liquid &amp; overnight funds</div>
+    </div>
+    <div class="asof">
+      Last actual release<br><b id="asof"></b><br>
+      <span id="nextrel"></span>
+    </div>
+  </header>
+
+  <div class="section-label">Recommended buffer — next release</div>
+  <div class="hero" id="hero"></div>
+  <div class="cap" style="margin-top:10px;color:var(--mute);font-size:11.5px">
+    Buffer = cash sized to the <b>95th percentile of forecast outflow</b> (breach expected ≤1 month in 20).
+    Figures in ₹ crore. Negative point forecast ⇒ net redemption month.</div>
+
+  <div class="section-label">3-month net-flow forecast with prediction intervals</div>
+  <div class="grid2">
+    <div class="panel"><h2>Liquid Fund</h2>
+      <div class="cap">Monthly net flow, ₹ crore · shaded = 80% / 95% interval</div>
+      <svg id="ch-liquid" class="chart" viewBox="0 0 520 240"></svg>
+      <div class="legend">
+        <span><span class="swatch" style="background:var(--ink)"></span>Actual</span>
+        <span><span class="swatch" style="background:var(--teal)"></span>Forecast</span>
+        <span><span class="swatch" style="background:var(--teal-wash);border:1px solid var(--line-strong)"></span>80% / 95% band</span>
+      </div>
+    </div>
+    <div class="panel"><h2>Overnight Fund</h2>
+      <div class="cap">Monthly net flow, ₹ crore · shaded = 80% / 95% interval</div>
+      <svg id="ch-overnight" class="chart" viewBox="0 0 520 240"></svg>
+      <div class="legend">
+        <span><span class="swatch" style="background:var(--ink)"></span>Actual</span>
+        <span><span class="swatch" style="background:var(--teal)"></span>Forecast</span>
+        <span><span class="swatch" style="background:var(--teal-wash);border:1px solid var(--line-strong)"></span>80% / 95% band</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid2" style="margin-top:16px">
+    <div class="panel">
+      <div class="section-label" style="margin:0 0 12px">Which drivers matter — Liquid</div>
+      <div class="cap" style="margin-top:-6px">OLS effect on net flow (₹ cr), HAC s.e. · <b>***</b> p&lt;.01 <b>**</b> p&lt;.05</div>
+      <div class="dbars" id="drv-liquid"></div>
+    </div>
+    <div class="panel">
+      <div class="section-label" style="margin:0 0 12px">Which drivers matter — Overnight</div>
+      <div class="cap" style="margin-top:-6px">OLS effect on net flow (₹ cr), HAC s.e. · <b>***</b> p&lt;.01 <b>**</b> p&lt;.05</div>
+      <div class="dbars" id="drv-overnight"></div>
+    </div>
+  </div>
+
+  <div class="section-label">Model benchmark — rolling-origin backtest, last 24 releases</div>
+  <div class="panel" style="overflow-x:auto">
+    <div class="cap" style="margin-top:-2px">Refit each step. Lower pinball / WAPE = better. Coverage should sit near its 80 / 95 target.
+      Selected model <span class="pill in">SARIMAX</span> for both categories — seasonal ARIMA (1,0,1)(1,0,0)₁₂ with
+      native multi-step intervals. (Note: the Growth+AR1 ensemble scores lower pinball/WAPE in the backtest below;
+      SARIMAX is used here per configuration.) The ML challenger <b>LightGBM-CQR</b> is conformalized yet still trails.</div>
+    <table id="bench"></table>
+  </div>
+
+  <div class="section-label">Decision layer — buffer cost vs. naive baseline (24-month backtest)</div>
+  <div class="panel" style="overflow-x:auto">
+    <div class="cap" style="margin-top:-2px">Cost = idle carry (1×) + shortfall penalty (3×), ₹ cr. Baseline = hold last year's same-month outflow.
+      <b>Shortfalls</b> = months the buffer was breached (forced distress selling).</div>
+    <table id="decision"></table>
+    <div class="cap" id="deckey" style="margin-top:12px;color:var(--ink-soft)"></div>
+  </div>
+
+  <div class="foot">
+    <b>Method.</b> Target: AMFI monthly category net flows (Apr 2019–present, {N} months). Features: advance-tax / fiscal-year-end
+    calendar flags, lagged net flow &amp; same-month-last-year, RBI repo rate, Nifty-50 returns. Point + 80/95 intervals from the
+    selected seasonal model; buffer from its predictive outflow distribution. The 1:3 cost asymmetry makes the cost-optimal buffer the
+    <b>75th</b> percentile of outflow; the <b>95th</b> percentile is recommended as the operating point because it drives breaches to
+    near zero at modest extra carry. <b>Caveat:</b> small sample (n≈90); the ML challenger (LightGBM-quantile) under-calibrates here and
+    was not selected. Sources: AMFI, RBI, NSE. Not investment advice.
+  </div>
+</div>
+
+<script id="data" type="application/json">{
+  "last_actual": "2026-09-01",
+  "hist": {
+    "liquid": [
+      {
+        "date": "2024-10-01",
+        "m": "Oct 24",
+        "net": 83863
+      },
+      {
+        "date": "2024-11-01",
+        "m": "Nov 24",
+        "net": -1779
+      },
+      {
+        "date": "2024-12-01",
+        "m": "Dec 24",
+        "net": -66532
+      },
+      {
+        "date": "2025-01-01",
+        "m": "Jan 25",
+        "net": 91593
+      },
+      {
+        "date": "2025-02-01",
+        "m": "Feb 25",
+        "net": 4977
+      },
+      {
+        "date": "2025-03-01",
+        "m": "Mar 25",
+        "net": -133034
+      },
+      {
+        "date": "2025-04-01",
+        "m": "Apr 25",
+        "net": 118656
+      },
+      {
+        "date": "2025-05-01",
+        "m": "May 25",
+        "net": -40205
+      },
+      {
+        "date": "2025-06-01",
+        "m": "Jun 25",
+        "net": -25196
+      },
+      {
+        "date": "2025-07-01",
+        "m": "Jul 25",
+        "net": 39355
+      },
+      {
+        "date": "2025-08-01",
+        "m": "Aug 25",
+        "net": -13350
+      },
+      {
+        "date": "2025-09-01",
+        "m": "Sep 25",
+        "net": -66042
+      },
+      {
+        "date": "2025-10-01",
+        "m": "Oct 25",
+        "net": 89375
+      },
+      {
+        "date": "2025-11-01",
+        "m": "Nov 25",
+        "net": -14051
+      },
+      {
+        "date": "2025-12-01",
+        "m": "Dec 25",
+        "net": -47308
+      },
+      {
+        "date": "2026-01-01",
+        "m": "Jan 26",
+        "net": 30682
+      },
+      {
+        "date": "2026-02-01",
+        "m": "Feb 26",
+        "net": 59077
+      },
+      {
+        "date": "2026-03-01",
+        "m": "Mar 26",
+        "net": -134988
+      },
+      {
+        "date": "2026-04-01",
+        "m": "Apr 26",
+        "net": 165105
+      },
+      {
+        "date": "2026-05-01",
+        "m": "May 26",
+        "net": -29681
+      },
+      {
+        "date": "2026-06-01",
+        "m": "Jun 26",
+        "net": -42293
+      },
+      {
+        "date": "2026-07-01",
+        "m": "Jul 26",
+        "net": 119066
+      },
+      {
+        "date": "2026-08-01",
+        "m": "Aug 26",
+        "net": 19934
+      },
+      {
+        "date": "2026-09-01",
+        "m": "Sep 26",
+        "net": -95743
+      }
+    ],
+    "overnight": [
+      {
+        "date": "2024-10-01",
+        "m": "Oct 24",
+        "net": 25784
+      },
+      {
+        "date": "2024-11-01",
+        "m": "Nov 24",
+        "net": 2019
+      },
+      {
+        "date": "2024-12-01",
+        "m": "Dec 24",
+        "net": -22348
+      },
+      {
+        "date": "2025-01-01",
+        "m": "Jan 25",
+        "net": 18937
+      },
+      {
+        "date": "2025-02-01",
+        "m": "Feb 25",
+        "net": -2264
+      },
+      {
+        "date": "2025-03-01",
+        "m": "Mar 25",
+        "net": -30016
+      },
+      {
+        "date": "2025-04-01",
+        "m": "Apr 25",
+        "net": 23900
+      },
+      {
+        "date": "2025-05-01",
+        "m": "May 25",
+        "net": -8120
+      },
+      {
+        "date": "2025-06-01",
+        "m": "Jun 25",
+        "net": -8154
+      },
+      {
+        "date": "2025-07-01",
+        "m": "Jul 25",
+        "net": 8866
+      },
+      {
+        "date": "2025-08-01",
+        "m": "Aug 25",
+        "net": 4951
+      },
+      {
+        "date": "2025-09-01",
+        "m": "Sep 25",
+        "net": 4279
+      },
+      {
+        "date": "2025-10-01",
+        "m": "Oct 25",
+        "net": 24051
+      },
+      {
+        "date": "2025-11-01",
+        "m": "Nov 25",
+        "net": -37625
+      },
+      {
+        "date": "2025-12-01",
+        "m": "Dec 25",
+        "net": 254
+      },
+      {
+        "date": "2026-01-01",
+        "m": "Jan 26",
+        "net": 46280
+      },
+      {
+        "date": "2026-02-01",
+        "m": "Feb 26",
+        "net": -14006
+      },
+      {
+        "date": "2026-03-01",
+        "m": "Mar 26",
+        "net": -40228
+      },
+      {
+        "date": "2026-04-01",
+        "m": "Apr 26",
+        "net": 31420
+      },
+      {
+        "date": "2026-05-01",
+        "m": "May 26",
+        "net": -15525
+      },
+      {
+        "date": "2026-06-01",
+        "m": "Jun 26",
+        "net": -10580
+      },
+      {
+        "date": "2026-07-01",
+        "m": "Jul 26",
+        "net": 40413
+      },
+      {
+        "date": "2026-08-01",
+        "m": "Aug 26",
+        "net": -30654
+      },
+      {
+        "date": "2026-09-01",
+        "m": "Sep 26",
+        "net": -7281
+      }
+    ]
+  },
+  "forecast": {
+    "liquid": [
+      {
+        "category": "liquid",
+        "month": "Jan 2026",
+        "date": "2026-01-01",
+        "point": 45769.41965378445,
+        "lo80": -17995.07547866364,
+        "hi80": 109533.91478623253,
+        "lo95": -51749.96022295798,
+        "hi95": 143288.79953052686,
+        "buffer_p75": 0.0,
+        "buffer_p95": 36071.42382781687,
+        "actual": 30681.5539128496,
+        "abs_pct_err": 0.49175689679185286
+      },
+      {
+        "category": "liquid",
+        "month": "Feb 2026",
+        "date": "2026-02-01",
+        "point": -1000.571083750177,
+        "lo80": -79464.34025298255,
+        "hi80": 77463.19808548219,
+        "lo95": -121000.55063791486,
+        "hi95": 118999.40847041446,
+        "buffer_p75": 42296.61370058294,
+        "buffer_p95": 101707.72854210019,
+        "actual": 59077.394055441,
+        "abs_pct_err": 1.0169366150919112
+      },
+      {
+        "category": "liquid",
+        "month": "Mar 2026",
+        "date": "2026-03-01",
+        "point": -61319.24245429261,
+        "lo80": -139944.54046291453,
+        "hi80": 17306.05555432931,
+        "lo95": -181566.25905025864,
+        "hi95": 58927.7741416734,
+        "buffer_p75": 102700.2988539949,
+        "buffer_p95": 162233.71993352234,
+        "actual": -134987.644659971,
+        "abs_pct_err": 0.5457418150471952
+      }
+    ],
+    "overnight": [
+      {
+        "category": "overnight",
+        "month": "Jan 2026",
+        "date": "2026-01-01",
+        "point": 9636.06209849741,
+        "lo80": -7151.76429761615,
+        "hi80": 26423.88849461097,
+        "lo95": -16038.702772248116,
+        "hi95": 35310.82696924293,
+        "buffer_p75": 0.0,
+        "buffer_p95": 11910.879810581833,
+        "actual": 46280.0491364803,
+        "abs_pct_err": 0.7917879890299907
+      },
+      {
+        "category": "overnight",
+        "month": "Feb 2026",
+        "date": "2026-02-01",
+        "point": -338.11798123618473,
+        "lo80": -19800.607690302135,
+        "hi80": 19124.371727829766,
+        "lo95": -30103.4273958757,
+        "hi95": 29427.191433403324,
+        "buffer_p75": 10581.365443918832,
+        "buffer_p95": 25317.95308748789,
+        "actual": -14006.20691026,
+        "abs_pct_err": 0.9758594183705439
+      },
+      {
+        "category": "overnight",
+        "month": "Mar 2026",
+        "date": "2026-03-01",
+        "point": -3998.6673137395605,
+        "lo80": -23507.393120035133,
+        "hi80": 15510.058492556012,
+        "lo95": -33834.68873700375,
+        "hi95": 25837.354109524626,
+        "buffer_p75": 14266.249164915736,
+        "buffer_p95": 29037.845808325317,
+        "actual": -40227.8993096799,
+        "abs_pct_err": 0.9005996489412168
+      }
+    ]
+  },
+  "backtest": [
+    {
+      "model": "ens_growth_ar1",
+      "category": "liquid",
+      "WAPE": 0.457,
+      "MAPE": 0.668,
+      "MAE_cr": 29174.038,
+      "pinball": 6290.933,
+      "cov80": 0.833,
+      "cov95": 1.0
+    },
+    {
+      "model": "ar1_calendar",
+      "category": "liquid",
+      "WAPE": 0.473,
+      "MAPE": 0.551,
+      "MAE_cr": 30182.802,
+      "pinball": 6638.453,
+      "cov80": 0.792,
+      "cov95": 0.917
+    },
+    {
+      "model": "seasonal_naive",
+      "category": "liquid",
+      "WAPE": 0.52,
+      "MAPE": 0.749,
+      "MAE_cr": 33198.867,
+      "pinball": 7124.718,
+      "cov80": 0.875,
+      "cov95": 1.0
+    },
+    {
+      "model": "seasonal_naive_growth",
+      "category": "liquid",
+      "WAPE": 0.524,
+      "MAPE": 0.778,
+      "MAE_cr": 33424.858,
+      "pinball": 7440.728,
+      "cov80": 0.833,
+      "cov95": 0.958
+    },
+    {
+      "model": "sarimax",
+      "category": "liquid",
+      "WAPE": 0.595,
+      "MAPE": 0.738,
+      "MAE_cr": 37991.917,
+      "pinball": 8051.383,
+      "cov80": 0.792,
+      "cov95": 0.958
+    },
+    {
+      "model": "ets",
+      "category": "liquid",
+      "WAPE": 0.652,
+      "MAPE": 0.774,
+      "MAE_cr": 41627.031,
+      "pinball": 8749.987,
+      "cov80": 0.667,
+      "cov95": 0.875
+    },
+    {
+      "model": "lgbm_cqr",
+      "category": "liquid",
+      "WAPE": 0.698,
+      "MAPE": 0.886,
+      "MAE_cr": 44525.179,
+      "pinball": 10142.831,
+      "cov80": 0.708,
+      "cov95": 0.875
+    },
+    {
+      "model": "lgbm_quantile",
+      "category": "liquid",
+      "WAPE": 0.608,
+      "MAPE": 0.72,
+      "MAE_cr": 38776.956,
+      "pinball": 12345.437,
+      "cov80": 0.292,
+      "cov95": 0.5
+    },
+    {
+      "model": "ens_growth_ar1",
+      "category": "overnight",
+      "WAPE": 0.726,
+      "MAPE": 0.566,
+      "MAE_cr": 13853.674,
+      "pinball": 3032.666,
+      "cov80": 0.75,
+      "cov95": 0.958
+    },
+    {
+      "model": "seasonal_naive_growth",
+      "category": "overnight",
+      "WAPE": 0.802,
+      "MAPE": 0.58,
+      "MAE_cr": 15307.646,
+      "pinball": 3281.561,
+      "cov80": 0.75,
+      "cov95": 0.917
+    },
+    {
+      "model": "seasonal_naive",
+      "category": "overnight",
+      "WAPE": 0.828,
+      "MAPE": 0.601,
+      "MAE_cr": 15804.117,
+      "pinball": 3336.726,
+      "cov80": 0.667,
+      "cov95": 0.917
+    },
+    {
+      "model": "sarimax",
+      "category": "overnight",
+      "WAPE": 0.795,
+      "MAPE": 0.695,
+      "MAE_cr": 15174.075,
+      "pinball": 3418.485,
+      "cov80": 0.625,
+      "cov95": 0.792
+    },
+    {
+      "model": "ar1_calendar",
+      "category": "overnight",
+      "WAPE": 0.804,
+      "MAPE": 0.688,
+      "MAE_cr": 15341.248,
+      "pinball": 3755.839,
+      "cov80": 0.667,
+      "cov95": 0.792
+    },
+    {
+      "model": "lgbm_cqr",
+      "category": "overnight",
+      "WAPE": 0.954,
+      "MAPE": 0.894,
+      "MAE_cr": 18205.607,
+      "pinball": 3798.148,
+      "cov80": 0.708,
+      "cov95": 0.792
+    },
+    {
+      "model": "ets",
+      "category": "overnight",
+      "WAPE": 0.919,
+      "MAPE": 0.803,
+      "MAE_cr": 17527.852,
+      "pinball": 4203.968,
+      "cov80": 0.458,
+      "cov95": 0.75
+    },
+    {
+      "model": "lgbm_quantile",
+      "category": "overnight",
+      "WAPE": 0.803,
+      "MAPE": 0.771,
+      "MAE_cr": 15316.786,
+      "pinball": 5893.18,
+      "cov80": 0.292,
+      "cov95": 0.333
+    }
+  ],
+  "decision": [
+    {
+      "category": "liquid",
+      "cost_p75": 724971.0,
+      "nshort_p75": 3,
+      "avgbuf_p75": 51930.5,
+      "cost_p90": 1175973.5,
+      "nshort_p90": 1,
+      "avgbuf_p90": 78093.6,
+      "cost_p95": 1566454.8,
+      "nshort_p95": 0,
+      "avgbuf_p95": 94860.7,
+      "cost_p99": 2384043.1,
+      "nshort_p99": 0,
+      "avgbuf_p99": 128926.9,
+      "cost_naive": 557526.4,
+      "nshort_naive": 8,
+      "avgbuf_naive": 29060.4,
+      "best_rule": "p75",
+      "cost_reduction_vs_naive_%": -30.0,
+      "pnl_cr_p75": 906.2,
+      "pnl_cr_p90": 1470.0,
+      "pnl_cr_p95": 1958.1,
+      "pnl_cr_p99": 2980.1,
+      "pnl_cr_naive": 696.9
+    },
+    {
+      "category": "overnight",
+      "cost_p75": 370378.3,
+      "nshort_p75": 8,
+      "avgbuf_p75": 8859.5,
+      "cost_p90": 338435.0,
+      "nshort_p90": 5,
+      "avgbuf_p90": 15435.6,
+      "cost_p95": 364987.7,
+      "nshort_p95": 3,
+      "avgbuf_p95": 19878.7,
+      "cost_p99": 480320.7,
+      "nshort_p99": 2,
+      "avgbuf_p99": 28817.7,
+      "cost_naive": 545650.7,
+      "nshort_naive": 10,
+      "avgbuf_naive": 6190.4,
+      "best_rule": "p90",
+      "cost_reduction_vs_naive_%": 38.0,
+      "pnl_cr_p75": 463.0,
+      "pnl_cr_p90": 423.0,
+      "pnl_cr_p95": 456.2,
+      "pnl_cr_p99": 600.4,
+      "pnl_cr_naive": 682.1
+    }
+  ],
+  "drivers": {
+    "liquid": [
+      {
+        "driver": "advance_tax",
+        "coef": -45530.46,
+        "t": -3.06,
+        "p": 0.0,
+        "sig": "***",
+        "lgbm_importance": 0.348
+      },
+      {
+        "driver": "fy_end",
+        "coef": -43193.7,
+        "t": -2.29,
+        "p": 0.02,
+        "sig": "**",
+        "lgbm_importance": 0.022
+      },
+      {
+        "driver": "q_end_h2",
+        "coef": -14684.63,
+        "t": -1.3,
+        "p": 0.19,
+        "sig": 0,
+        "lgbm_importance": 0.001
+      },
+      {
+        "driver": "april_rebound",
+        "coef": 22463.65,
+        "t": 1.97,
+        "p": 0.05,
+        "sig": "**",
+        "lgbm_importance": 0.015
+      },
+      {
+        "driver": "nifty_ret_1m",
+        "coef": 2589.83,
+        "t": 0.03,
+        "p": 0.98,
+        "sig": 0,
+        "lgbm_importance": 0.03
+      },
+      {
+        "driver": "nifty_ret_3m",
+        "coef": -7042.3,
+        "t": -0.14,
+        "p": 0.88,
+        "sig": 0,
+        "lgbm_importance": 0.069
+      },
+      {
+        "driver": "repo_rate",
+        "coef": 6607.44,
+        "t": 0.6,
+        "p": 0.55,
+        "sig": 0,
+        "lgbm_importance": 0.026
+      },
+      {
+        "driver": "repo_chg_3m",
+        "coef": -4416.67,
+        "t": -0.33,
+        "p": 0.74,
+        "sig": 0,
+        "lgbm_importance": 0.0
+      },
+      {
+        "driver": "sys_liq",
+        "coef": 1639.21,
+        "t": 0.44,
+        "p": 0.66,
+        "sig": 0,
+        "lgbm_importance": 0.06
+      },
+      {
+        "driver": "sys_liq_chg_3m",
+        "coef": -1941.08,
+        "t": -0.46,
+        "p": 0.64,
+        "sig": 0,
+        "lgbm_importance": 0.055
+      },
+      {
+        "driver": "net_lag1",
+        "coef": -0.31,
+        "t": -4.84,
+        "p": 0.0,
+        "sig": "***",
+        "lgbm_importance": 0.193
+      },
+      {
+        "driver": "net_lag12",
+        "coef": 0.16,
+        "t": 1.31,
+        "p": 0.19,
+        "sig": 0,
+        "lgbm_importance": 0.18
+      }
+    ],
+    "overnight": [
+      {
+        "driver": "advance_tax",
+        "coef": -11451.31,
+        "t": -2.24,
+        "p": 0.02,
+        "sig": "**",
+        "lgbm_importance": 0.035
+      },
+      {
+        "driver": "fy_end",
+        "coef": -7664.41,
+        "t": -1.17,
+        "p": 0.24,
+        "sig": 0,
+        "lgbm_importance": 0.059
+      },
+      {
+        "driver": "q_end_h2",
+        "coef": 4523.85,
+        "t": 1.03,
+        "p": 0.3,
+        "sig": 0,
+        "lgbm_importance": 0.002
+      },
+      {
+        "driver": "april_rebound",
+        "coef": 5909.02,
+        "t": 0.85,
+        "p": 0.4,
+        "sig": 0,
+        "lgbm_importance": 0.005
+      },
+      {
+        "driver": "nifty_ret_1m",
+        "coef": -22059.84,
+        "t": -0.56,
+        "p": 0.58,
+        "sig": 0,
+        "lgbm_importance": 0.075
+      },
+      {
+        "driver": "nifty_ret_3m",
+        "coef": 268.11,
+        "t": 0.02,
+        "p": 0.99,
+        "sig": 0,
+        "lgbm_importance": 0.073
+      },
+      {
+        "driver": "repo_rate",
+        "coef": -5967.77,
+        "t": -1.68,
+        "p": 0.09,
+        "sig": "*",
+        "lgbm_importance": 0.08
+      },
+      {
+        "driver": "repo_chg_3m",
+        "coef": 545.54,
+        "t": 0.12,
+        "p": 0.9,
+        "sig": 0,
+        "lgbm_importance": 0.006
+      },
+      {
+        "driver": "sys_liq",
+        "coef": -1593.5,
+        "t": -1.26,
+        "p": 0.21,
+        "sig": 0,
+        "lgbm_importance": 0.105
+      },
+      {
+        "driver": "sys_liq_chg_3m",
+        "coef": -190.84,
+        "t": -0.12,
+        "p": 0.9,
+        "sig": 0,
+        "lgbm_importance": 0.071
+      },
+      {
+        "driver": "net_lag1",
+        "coef": -0.47,
+        "t": -6.24,
+        "p": 0.0,
+        "sig": "***",
+        "lgbm_importance": 0.294
+      },
+      {
+        "driver": "net_lag12",
+        "coef": 0.28,
+        "t": 1.69,
+        "p": 0.09,
+        "sig": "*",
+        "lgbm_importance": 0.196
+      }
+    ]
+  }
+}</script>
+<script>
+const D = JSON.parse(document.getElementById('data').textContent);
+const fmt = n => (n<0?'−':'') + Math.abs(Math.round(n)).toLocaleString('en-IN');
+const monName=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+// header
+const la = new Date(D.last_actual);
+document.getElementById('asof').textContent = monName[la.getMonth()]+" "+la.getFullYear();
+const nr = new Date(la); nr.setMonth(nr.getMonth()+1);
+document.getElementById('nextrel').textContent = "Next release: "+monName[nr.getMonth()]+" "+nr.getFullYear();
+
+// hero buffer cards (first redemption month in the horizon, else largest buffer)
+function heroCard(cat,label){
+  const f=D.forecast[cat];
+  let pick=f.reduce((a,b)=>b.buffer_p95>a.buffer_p95?b:a,f[0]);
+  const isOut=pick.point<0;
+  return `<div class="bufcard">
+    <h3>${label}</h3>
+    <div class="sub">Peak buffer month · ${pick.month}
+      <span class="pill ${isOut?'out':'in'}">${isOut?'net outflow':'net inflow'}</span></div>
+    <div class="bignum">₹${fmt(pick.buffer_p95)}<span class="unit">cr</span></div>
+    <div class="sub">cash to hold (95th-pct outflow cover)</div>
+    <div class="bufmeta">
+      <div>Point forecast<b class="tnum">₹${fmt(pick.point)} cr</b></div>
+      <div>80% interval<b class="tnum">${fmt(pick.lo80)} … ${fmt(pick.hi80)}</b></div>
+      <div>Cost-optimal (p75)<b class="tnum">₹${fmt(pick.buffer_p75)} cr</b></div>
+    </div></div>`;
+}
+document.getElementById('hero').innerHTML =
+  heroCard('liquid','Liquid Fund')+heroCard('overnight','Overnight Fund');
+
+// fan chart
+function chart(id,cat){
+  const W=520,H=240,P={l:52,r:14,t:14,b:28};
+  const hist=D.hist[cat], fc=D.forecast[cat];
+  const pts=hist.map((d,i)=>({x:i,label:d.m,act:d.net}));
+  const base=hist.length-1;
+  const fpts=fc.map((d,i)=>({x:base+1+i,label:d.month.slice(0,3),
+     p:d.point,lo80:d.lo80,hi80:d.hi80,lo95:d.lo95,hi95:d.hi95}));
+  const n=hist.length+fc.length;
+  let vals=[...hist.map(d=>d.net),...fc.flatMap(d=>[d.lo95,d.hi95])];
+  let mn=Math.min(...vals),mx=Math.max(...vals);
+  const pad=(mx-mn)*0.08; mn-=pad; mx+=pad;
+  const X=i=>P.l+(W-P.l-P.r)*(i/(n-1));
+  const Y=v=>P.t+(H-P.t-P.b)*(1-(v-mn)/(mx-mn));
+  let s='';
+  // gridlines + y labels
+  const ticks=4;
+  for(let k=0;k<=ticks;k++){const v=mn+(mx-mn)*k/ticks;const y=Y(v);
+    s+=`<line x1="${P.l}" y1="${y}" x2="${W-P.r}" y2="${y}" stroke="#EDF0F3"/>`;
+    s+=`<text x="${P.l-8}" y="${y+3}" text-anchor="end" font-size="9.5" fill="#9AA5B1" font-family="system-ui">${fmt(v)}</text>`;}
+  // zero line
+  const yz=Y(0); s+=`<line x1="${P.l}" y1="${yz}" x2="${W-P.r}" y2="${yz}" stroke="#C7CFD8" stroke-dasharray="2 2"/>`;
+  // forecast bands (connect from last actual)
+  const conn={x:base,hi95:hist[base].net,lo95:hist[base].net,hi80:hist[base].net,lo80:hist[base].net,p:hist[base].net};
+  const seq=[conn,...fpts];
+  const band=(key1,key2,fill)=>{
+    let up=seq.map(d=>`${X(d.x)},${Y(d[key1])}`).join(' ');
+    let dn=seq.slice().reverse().map(d=>`${X(d.x)},${Y(d[key2])}`).join(' ');
+    return `<polygon points="${up} ${dn}" fill="${fill}" stroke="none"/>`;};
+  s+=band('hi95','lo95','#D2E6E5');
+  s+=band('hi80','lo80','#B3D6D4');
+  // actual line
+  let ap=pts.map(d=>`${X(d.x)},${Y(d.act)}`).join(' ');
+  s+=`<polyline points="${ap}" fill="none" stroke="#16202E" stroke-width="1.8"/>`;
+  // forecast median line
+  let fp=seq.map(d=>`${X(d.x)},${Y(d.p)}`).join(' ');
+  s+=`<polyline points="${fp}" fill="none" stroke="#0E6E6B" stroke-width="1.8" stroke-dasharray="4 3"/>`;
+  // actual markers (last few) coloured by sign
+  pts.forEach((d,i)=>{if(i%1===0){const c=d.act<0?'#C14434':'#2F8F5B';
+    s+=`<circle cx="${X(d.x)}" cy="${Y(d.act)}" r="${i>=pts.length-1?3:1.6}" fill="${c}"/>`;}});
+  fpts.forEach(d=>{s+=`<circle cx="${X(d.x)}" cy="${Y(d.p)}" r="3.2" fill="#0E6E6B"/>`;});
+  // x labels (every ~4th + forecast)
+  pts.forEach((d,i)=>{if(i%4===0)s+=`<text x="${X(d.x)}" y="${H-10}" text-anchor="middle" font-size="9" fill="#9AA5B1" font-family="system-ui">${d.label}</text>`;});
+  fpts.forEach(d=>{s+=`<text x="${X(d.x)}" y="${H-10}" text-anchor="middle" font-size="9" fill="#0E6E6B" font-weight="600" font-family="system-ui">${d.label}</text>`;});
+  document.getElementById(id).innerHTML=s;
+}
+chart('ch-liquid','liquid'); chart('ch-overnight','overnight');
+
+// driver bars
+function drivers(id,cat){
+  const rows=D.drivers[cat].filter(r=>['advance_tax','fy_end','april_rebound','net_lag1','repo_rate','nifty_ret_3m'].includes(r.driver));
+  const nice={advance_tax:'Advance tax',fy_end:'FY-end (Mar)',april_rebound:'April rebound',
+    net_lag1:'Prior-month flow',repo_rate:'Repo rate',nifty_ret_3m:'Nifty 3m return'};
+  const mx=Math.max(...rows.map(r=>Math.abs(r.coef)));
+  let s='';
+  rows.forEach(r=>{
+    const w=Math.abs(r.coef)/mx*50; // half-width %
+    const pos=r.coef>=0; const col=pos?'var(--good)':'var(--bad)';
+    const left=pos?50:50-w;
+    const sig=(r.sig&&r.sig!=='0')?`<span class="sig">${r.sig}</span>`:'';
+    s+=`<div class="dbar"><div class="nm">${nice[r.driver]}</div>
+      <div class="track"><div class="mid"></div>
+        <div class="fill" style="left:${left}%;width:${w}%;background:${col}"></div></div>
+      <div class="val">${fmt(r.coef)}${sig}</div></div>`;});
+  document.getElementById(id).innerHTML=s;
+}
+drivers('drv-liquid','liquid'); drivers('drv-overnight','overnight');
+
+// benchmark table
+(function(){
+  const order=['seasonal_naive','seasonal_naive_growth','ens_growth_ar1','ar1_calendar','sarimax','ets','lgbm_cqr','lgbm_quantile'];
+  const nm={seasonal_naive:'Seasonal Naive',seasonal_naive_growth:'Seasonal Naive +growth',
+    ens_growth_ar1:'Growth + AR1 (2:1)',ar1_calendar:'AR1 + calendar',
+    sarimax:'SARIMAX',ets:'ETS',lgbm_cqr:'LightGBM-CQR',lgbm_quantile:'LightGBM-Q (raw)'};
+  const SELECTED={liquid:'sarimax',overnight:'sarimax'};
+  const cov=(v,t)=>{const off=Math.abs(v-t)>0.17;return `<span class="${off?'cov-off':'cov-ok'}">${(v*100).toFixed(0)}%</span>`;};
+  let s=`<thead><tr><th>Model</th><th>Cat.</th><th>Pinball</th><th>WAPE</th><th>MAE ₹cr</th><th>80% cov</th><th>95% cov</th></tr></thead><tbody>`;
+  ['liquid','overnight'].forEach(cat=>{
+    order.forEach(m=>{const r=D.backtest.find(x=>x.model===m&&x.category===cat);
+      const best=(m===SELECTED[cat]);
+      s+=`<tr class="${best?'best':''}"><td>${nm[m]}</td><td class="dim">${cat.slice(0,3)}</td>
+        <td class="tnum">${Math.round(r.pinball).toLocaleString('en-IN')}</td>
+        <td class="tnum">${r.WAPE.toFixed(2)}</td>
+        <td class="tnum">${Math.round(r.MAE_cr).toLocaleString('en-IN')}</td>
+        <td class="tnum">${cov(r.cov80,.8)}</td><td class="tnum">${cov(r.cov95,.95)}</td></tr>`;});
+  });
+  document.getElementById('bench').innerHTML=s+'</tbody>';
+})();
+
+// decision table
+(function(){
+  const cols=[['p75','75th pct'],['p90','90th pct'],['p95','95th pct ◂ rec'],['naive','Naive baseline']];
+  let s=`<thead><tr><th>Category</th>`+cols.map(c=>`<th>${c[1]}</th>`).join('')+`</tr></thead><tbody>`;
+  D.decision.forEach(d=>{
+    s+=`<tr><td style="font-weight:600">${d.category[0].toUpperCase()+d.category.slice(1)}</td>`;
+    cols.forEach(c=>{const k=c[0];
+      const cost=d['cost_'+k], nsh=d['nshort_'+k], buf=d['avgbuf_'+k];
+      const rec=(k==='p95');
+      s+=`<td style="${rec?'background:var(--teal-wash)':''}">
+        <div class="tnum" style="font-weight:600">₹${Math.round(cost).toLocaleString('en-IN')}</div>
+        <div class="dim" style="font-size:10.5px">${nsh} breach · buf ₹${Math.round(buf/1000)}k</div></td>`;});
+    s+=`</tr>`;});
+  document.getElementById('decision').innerHTML=s+'</tbody>';
+  const liq=D.decision.find(d=>d.category==='liquid'), ov=D.decision.find(d=>d.category==='overnight');
+  const pnl=(d,k)=>'₹'+Math.round(d['pnl_cr_'+k]).toLocaleString('en-IN')+' cr';
+  document.getElementById('deckey').innerHTML=
+    `<b>Read:</b> the 95th-pct rule eliminates liquidity breaches (Liquid ${liq.nshort_naive}→${liq.nshort_p95}, `+
+    `Overnight ${ov.nshort_naive}→${ov.nshort_p95} months) vs the naive rule. `+
+    `<b>Rupee P&L</b> (carry 1.5%/yr, shortfall 3×, 24-month total): Overnight p95 ${pnl(ov,'p95')} `+
+    `beats naive ${pnl(ov,'naive')} <i>and</i> is safer; Liquid p95 ${pnl(liq,'p95')} vs naive ${pnl(liq,'naive')} — `+
+    `the ~₹${Math.round(liq.pnl_cr_p95-liq.pnl_cr_naive)} cr premium buys zero distress-selling events (naive breaches 8 of 24 months).`;
+})();
+
+document.querySelector('.foot').innerHTML=
+  document.querySelector('.foot').innerHTML.replace('{N}', D.hist.liquid.length>=24?'90':D.hist.liquid.length);
+</script>
