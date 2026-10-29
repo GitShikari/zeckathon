@@ -1,0 +1,417 @@
+<title>March Forecast vs Actual — Liquid & Overnight Funds</title>
+<style>
+  :root{
+    --ground:#F4F6F8; --panel:#FFFFFF; --ink:#16202E; --ink-soft:#44525F;
+    --mute:#7C8896; --line:#E2E7EC; --line-strong:#CBD3DB;
+    --teal:#0E6E6B; --teal-deep:#0A4F4D; --teal-wash:#E4F0EF;
+    --good:#2F8F5B; --good-wash:#E7F2EC;
+    --bad:#C14434; --bad-wash:#F6E7E4; --amber:#C2882A;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);
+    font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:960px;margin:0 auto;padding:30px 24px 60px}
+  .tnum{font-variant-numeric:tabular-nums}
+  h1,h2,h3{margin:0;text-wrap:balance}
+
+  .masthead{border-bottom:2px solid var(--ink);padding-bottom:16px}
+  .eyebrow{text-transform:uppercase;letter-spacing:.14em;font-size:11px;
+    font-weight:600;color:var(--teal);margin-bottom:6px}
+  h1{font-family:var(--serif);font-size:30px;font-weight:600;letter-spacing:-.01em;line-height:1.12}
+  .lede{color:var(--ink-soft);margin-top:8px;font-size:13.5px;max-width:70ch}
+
+  .section-label{text-transform:uppercase;letter-spacing:.12em;font-size:11px;
+    font-weight:700;color:var(--mute);margin:30px 0 14px;display:flex;align-items:center;gap:10px}
+  .section-label::after{content:"";flex:1;height:1px;background:var(--line)}
+
+  .cat{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:22px 24px;margin-bottom:18px}
+  .cat-head{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px}
+  .cat-head h2{font-size:18px;font-weight:700}
+  .cat-head .best{font-size:12px;color:var(--mute)}
+  .cat-head .best b{color:var(--teal-deep)}
+
+  .cmp{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:16px}
+  .stat{border:1px solid var(--line);border-radius:10px;padding:14px 16px;background:#FCFDFD}
+  .stat .k{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--mute);font-weight:700}
+  .stat .v{font-family:var(--serif);font-size:30px;font-weight:600;margin-top:6px;letter-spacing:-.01em}
+  .stat .u{font-family:var(--sans);font-size:12px;color:var(--mute);font-weight:600;margin-left:4px}
+  .v.fore{color:var(--teal-deep)} .v.act{color:var(--ink)}
+  .v.err-pos{color:var(--good)} .v.err-neg{color:var(--bad)}
+
+  .bars{margin-top:18px}
+  .barrow{display:grid;grid-template-columns:72px 1fr 120px;align-items:center;gap:12px;margin:8px 0;font-size:12.5px}
+  .barrow .lab{color:var(--ink-soft);font-weight:600}
+  .barwrap{position:relative;height:22px;background:var(--line);border-radius:5px;overflow:hidden}
+  .barwrap .zero{position:absolute;top:0;bottom:0;width:1.5px;background:var(--line-strong)}
+  .bar{position:absolute;top:0;bottom:0;border-radius:5px}
+  .bar.fore{background:var(--teal)} .bar.act{background:var(--ink)}
+  .barval{text-align:right;color:var(--ink);font-variant-numeric:tabular-nums}
+
+  .epill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;
+    padding:4px 12px;border-radius:20px}
+  .epill.lo{background:var(--good-wash);color:var(--good)}
+  .epill.mid{background:#FBF1DD;color:var(--amber)}
+  .epill.hi{background:var(--bad-wash);color:var(--bad)}
+
+  table{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:16px}
+  th,td{padding:8px 8px;text-align:right}
+  th:first-child,td:first-child{text-align:left}
+  thead th{font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--mute);
+    font-weight:700;border-bottom:1px solid var(--line-strong)}
+  tbody td{border-bottom:1px solid var(--line)}
+  tbody tr:last-child td{border-bottom:none}
+  .in-yes{color:var(--good);font-weight:700}
+  .in-no{color:var(--bad);font-weight:700}
+  .rowbest td{background:var(--teal-wash)}
+  .rowbest td:first-child,.rowbest td:nth-child(2){font-weight:700;color:var(--teal-deep)}
+
+  .note{display:flex;gap:10px;align-items:flex-start;background:#FBF8F1;border:1px solid #EFE4CC;
+    border-radius:10px;padding:12px 14px;margin-top:14px;font-size:12px;color:#7a5e20}
+  .foot{margin-top:28px;font-size:11px;color:var(--mute);line-height:1.7;
+    border-top:1px solid var(--line);padding-top:16px}
+  .foot b{color:var(--ink-soft)}
+  @media(max-width:680px){.cmp{grid-template-columns:1fr}.barrow{grid-template-columns:60px 1fr 92px}}
+</style>
+
+<div class="wrap">
+  <header class="masthead">
+    <div class="eyebrow">Treasury Liquidity Desk · Monthly backtest</div>
+    <h1 id="h1">Forecast vs. actual — latest release</h1>
+    <p class="lede">The PS's headline month. Each model was trained on every month <b>up to February</b>, then asked to
+      forecast <b>March</b> blind (the fiscal-year-end + advance-tax outflow). Below: the forecast, the actual that
+      printed, the difference, and the absolute % error. Net flows in ₹ crore.</p>
+  </header>
+
+  <div class="section-label" id="mlabel">Month</div>
+  <div id="cats"></div>
+
+  <div class="section-label">All models — side by side</div>
+  <div class="cat" style="padding-top:18px">
+    <table id="tbl"></table>
+    <div class="note">
+      <span>⚠</span>
+      <div><b>On % error:</b> March is the most predictable month (large, seasonal FY-end + advance-tax outflow), so
+      point errors are low here. Still read the <b>₹ difference</b> and <b>interval capture</b> alongside the %, and use
+      rolling WAPE (last 24 releases) as the stable accuracy gauge — a forecast inside its 80/95% band is behaving as designed.</div>
+    </div>
+  </div>
+
+  <div class="foot" id="foot"></div>
+</div>
+
+<script id="data" type="application/json">{
+  "month": "Mar 2026",
+  "validation": {
+    "liquid": {
+      "seasonal_naive": {
+        "actual": -134987.644659971,
+        "point": -133034.04407551,
+        "err": -1953.6005844610045,
+        "ape": 0.014472439973169795,
+        "lo80": -195786.4792062417,
+        "hi80": -70281.6089447783,
+        "lo95": -229005.6117479774,
+        "hi95": -37062.4764030426,
+        "in80": true,
+        "in95": true
+      },
+      "seasonal_naive_growth": {
+        "actual": -134987.644659971,
+        "point": -140398.0544035779,
+        "err": 5410.409743606899,
+        "ape": 0.04008077744622869,
+        "lo80": -200799.99878425477,
+        "hi80": -79996.11002290105,
+        "lo95": -232774.85668387453,
+        "hi95": -48021.25212328129,
+        "in80": true,
+        "in95": true
+      },
+      "ens_growth_ar1": {
+        "actual": -134987.644659971,
+        "point": -127504.91808297113,
+        "err": -7482.726576999878,
+        "ape": 0.055432677530218376,
+        "lo80": -183110.1093453751,
+        "hi80": -71899.72682056716,
+        "lo95": -212545.71952856873,
+        "hi95": -42464.11663737355,
+        "in80": true,
+        "in95": true
+      },
+      "ar1_calendar": {
+        "actual": -134987.644659971,
+        "point": -101718.6454417576,
+        "err": -33268.9992182134,
+        "ape": 0.2464595874831123,
+        "lo80": -147730.3305067625,
+        "hi80": -55706.96037675273,
+        "lo95": -172087.44527782677,
+        "hi95": -31349.845605688446,
+        "in80": true,
+        "in95": true
+      },
+      "sarimax": {
+        "actual": -134987.644659971,
+        "point": -95757.85608495469,
+        "err": -39229.78857501631,
+        "ape": 0.29061762410800435,
+        "lo80": -159632.48584772865,
+        "hi80": -31883.22632218073,
+        "lo95": -193445.6723435743,
+        "hi95": 1929.960173664891,
+        "in80": true,
+        "in95": true
+      },
+      "ets": {
+        "actual": -134987.644659971,
+        "point": -63742.29094391859,
+        "err": -71245.35371605241,
+        "ape": 0.5277916649002721,
+        "lo80": -116289.13459236074,
+        "hi80": -11195.447295476435,
+        "lo95": -144105.75334462035,
+        "hi95": 16621.171456783137,
+        "in80": false,
+        "in95": true
+      },
+      "lgbm_cqr": {
+        "actual": -134987.644659971,
+        "point": -40566.42567396059,
+        "err": -94421.21898601041,
+        "ape": 0.699480454110108,
+        "lo80": -111561.1804133158,
+        "hi80": 38676.710276043996,
+        "lo95": -119470.3880630444,
+        "hi95": 71598.7275918445,
+        "in80": false,
+        "in95": false
+      }
+    },
+    "overnight": {
+      "seasonal_naive": {
+        "actual": -40227.8993096799,
+        "point": -30015.7993402407,
+        "err": -10212.099969439201,
+        "ape": 0.25385615815593676,
+        "lo80": -52678.45065462315,
+        "hi80": -7353.148025858252,
+        "lo95": -64675.33358340893,
+        "hi95": 4643.734902927521,
+        "in80": true,
+        "in95": true
+      },
+      "seasonal_naive_growth": {
+        "actual": -40227.8993096799,
+        "point": -36794.740429548394,
+        "err": -3433.1588801315083,
+        "ape": 0.08534273325342144,
+        "lo80": -60539.91083141272,
+        "hi80": -13049.570027684065,
+        "lo95": -73109.84474971156,
+        "hi95": -479.63610938523925,
+        "in80": true,
+        "in95": true
+      },
+      "ens_growth_ar1": {
+        "actual": -40227.8993096799,
+        "point": -24299.73882548822,
+        "err": -15928.160484191681,
+        "ape": 0.39594810461203833,
+        "lo80": -45770.29500682904,
+        "hi80": -2829.1826441474004,
+        "lo95": -57136.12089146396,
+        "hi95": 8536.643240487512,
+        "in80": true,
+        "in95": true
+      },
+      "ar1_calendar": {
+        "actual": -40227.8993096799,
+        "point": 690.2643826321264,
+        "err": -40918.16369231203,
+        "ape": 1.017158847329272,
+        "lo80": -16231.06337277719,
+        "hi80": 17611.59213804144,
+        "lo95": -25188.673198085966,
+        "hi95": 26569.20196335021,
+        "in80": false,
+        "in95": false
+      },
+      "sarimax": {
+        "actual": -40227.8993096799,
+        "point": -5177.0849969043265,
+        "err": -35050.814312775576,
+        "ape": 0.8713061063156589,
+        "lo80": -22964.753765066303,
+        "hi80": 12610.58377125765,
+        "lo95": -32380.976819790267,
+        "hi95": 22026.806825981606,
+        "in80": false,
+        "in95": false
+      },
+      "ets": {
+        "actual": -40227.8993096799,
+        "point": -1481.8424932533756,
+        "err": -38746.05681642653,
+        "ape": 0.963163811218529,
+        "lo80": -18958.11882663029,
+        "hi80": 15994.433840123538,
+        "lo95": -28209.50068368489,
+        "hi95": 25245.815697178135,
+        "in80": false,
+        "in95": false
+      },
+      "lgbm_cqr": {
+        "actual": -40227.8993096799,
+        "point": -1499.4516061376828,
+        "err": -38728.44770354222,
+        "ape": 0.9627260773774265,
+        "lo80": -27777.437913242422,
+        "hi80": 29636.827888762753,
+        "lo95": -40325.81431105131,
+        "hi95": 46426.126528641704,
+        "in80": false,
+        "in95": true
+      }
+    }
+  },
+  "models": {
+    "liquid": {
+      "seasonal_naive": {
+        "WAPE": 0.5201,
+        "pinball": 7124.7178
+      },
+      "seasonal_naive_growth": {
+        "WAPE": 0.5237,
+        "pinball": 7440.728
+      },
+      "ens_growth_ar1": {
+        "WAPE": 0.4571,
+        "pinball": 6290.9329
+      },
+      "ar1_calendar": {
+        "WAPE": 0.4729,
+        "pinball": 6638.4533
+      },
+      "sarimax": {
+        "WAPE": 0.5952,
+        "pinball": 8051.3833
+      },
+      "ets": {
+        "WAPE": 0.6522,
+        "pinball": 8749.9872
+      },
+      "lgbm_cqr": {
+        "WAPE": 0.6976,
+        "pinball": 10142.8312
+      }
+    },
+    "overnight": {
+      "seasonal_naive": {
+        "WAPE": 0.8282,
+        "pinball": 3336.7257
+      },
+      "seasonal_naive_growth": {
+        "WAPE": 0.8022,
+        "pinball": 3281.5609
+      },
+      "ens_growth_ar1": {
+        "WAPE": 0.726,
+        "pinball": 3032.6665
+      },
+      "ar1_calendar": {
+        "WAPE": 0.804,
+        "pinball": 3755.8386
+      },
+      "sarimax": {
+        "WAPE": 0.7952,
+        "pinball": 3418.4853
+      },
+      "ets": {
+        "WAPE": 0.9186,
+        "pinball": 4203.9684
+      },
+      "lgbm_cqr": {
+        "WAPE": 0.9541,
+        "pinball": 3798.1475
+      }
+    }
+  }
+}</script>
+<script>
+const D = JSON.parse(document.getElementById('data').textContent);
+const V = D.validation, M = D.models, MONTH = D.month;
+const fmt = n => (n<0?'−':'') + Math.abs(Math.round(n)).toLocaleString('en-IN');
+const fmtsign = n => (n<0?'−':'+') + Math.abs(Math.round(n)).toLocaleString('en-IN');
+const nm = {seasonal_naive:'Seasonal-naive', sarimax:'SARIMAX', ets:'ETS', lgbm_cqr:'LightGBM-CQR'};
+const catName = {liquid:'Liquid Fund', overnight:'Overnight Fund'};
+
+document.getElementById('mlabel').textContent = MONTH + " · forecast vs actual";
+document.getElementById('h1').textContent = `Forecast vs. actual — ${MONTH}`;
+
+function best(cat){
+  const keys = Object.keys(V[cat]);
+  return keys.reduce((a,b)=> Math.abs(V[cat][b].err) < Math.abs(V[cat][a].err) ? b : a);
+}
+const pct = v => v.ape==null ? '—' : (v.ape*100).toFixed(1)+'%';
+function epillClass(ape){ return ape==null?'mid': ape<0.25?'lo': ape<1?'mid':'hi'; }
+
+function catBlock(cat){
+  const bm = best(cat); const v = V[cat][bm];
+  const errCls = v.err>=0 ? 'err-pos':'err-neg';
+  const mx = Math.max(Math.abs(v.actual),Math.abs(v.point),Math.abs(v.lo95),Math.abs(v.hi95))*1.1 || 1;
+  const bar = (val,cls)=>{ const w=Math.abs(val)/mx*50; const left=val>=0?50:50-w;
+    return `<div class="barwrap"><div class="zero" style="left:50%"></div>
+      <div class="bar ${cls}" style="left:${left}%;width:${w}%"></div></div>`; };
+  const wape = M[cat][bm] && M[cat][bm].WAPE!=null ? `· rolling-24m WAPE ${M[cat][bm].WAPE.toFixed(2)}` : '';
+  return `<div class="cat">
+    <div class="cat-head">
+      <h2>${catName[cat]}</h2>
+      <div class="best">best model: <b>${nm[bm]}</b> ${wape}</div>
+    </div>
+    <div class="cmp">
+      <div class="stat"><div class="k">Forecast</div><div class="v fore">${fmt(v.point)}<span class="u">₹cr</span></div></div>
+      <div class="stat"><div class="k">Actual</div><div class="v act">${fmt(v.actual)}<span class="u">₹cr</span></div></div>
+      <div class="stat"><div class="k">Difference</div><div class="v ${errCls}">${fmtsign(v.err)}<span class="u">₹cr</span></div>
+        <div style="margin-top:8px"><span class="epill ${epillClass(v.ape)}">${pct(v)} abs error</span></div></div>
+    </div>
+    <div class="bars">
+      <div class="barrow"><div class="lab">Forecast</div>${bar(v.point,'fore')}<div class="barval">${fmt(v.point)}</div></div>
+      <div class="barrow"><div class="lab">Actual</div>${bar(v.actual,'act')}<div class="barval">${fmt(v.actual)}</div></div>
+    </div>
+    <div style="margin-top:10px;font-size:12px;color:var(--ink-soft)">
+      80% interval [${fmt(v.lo80)}, ${fmt(v.hi80)}] — actual
+      <b class="${v.in80?'in-yes':'in-no'}">${v.in80?'inside':'outside'}</b> ·
+      95% interval [${fmt(v.lo95)}, ${fmt(v.hi95)}] — actual
+      <b class="${v.in95?'in-yes':'in-no'}">${v.in95?'inside':'outside'}</b></div>
+  </div>`;
+}
+document.getElementById('cats').innerHTML = ['liquid','overnight'].map(catBlock).join('');
+
+(function(){
+  let s = `<thead><tr><th>Category</th><th>Model</th><th>Forecast</th><th>Actual</th>
+    <th>Difference</th><th>Abs % err</th><th>In 80%</th><th>In 95%</th></tr></thead><tbody>`;
+  ['liquid','overnight'].forEach(cat=>{
+    const bm = best(cat);
+    Object.keys(V[cat]).forEach(mk=>{
+      const v = V[cat][mk]; const rb = (mk===bm);
+      s += `<tr class="${rb?'rowbest':''}">
+        <td>${rb?catName[cat]:''}</td><td>${nm[mk]}</td>
+        <td class="tnum">${fmt(v.point)}</td><td class="tnum">${fmt(v.actual)}</td>
+        <td class="tnum">${fmtsign(v.err)}</td><td class="tnum">${pct(v)}</td>
+        <td class="${v.in80?'in-yes':'in-no'}">${v.in80?'✓':'✗'}</td>
+        <td class="${v.in95?'in-yes':'in-no'}">${v.in95?'✓':'✗'}</td></tr>`;
+    });
+  });
+  document.getElementById('tbl').innerHTML = s + '</tbody>';
+})();
+
+document.getElementById('foot').innerHTML =
+  `<b>Method.</b> Target: AMFI monthly category net flows. The latest available release is <b>${MONTH}</b>; training
+   used every month before it (refit, no leakage). Point + 80/95% prediction intervals from each model's predictive
+   distribution. "Best model" = smallest absolute error this month; rolling-24m WAPE shown for context.
+   Sources: AMFI, RBI, NSE. Not investment advice.`;
+</script>

@@ -1,0 +1,751 @@
+{
+  "last_actual": "2026-09-01",
+  "hist": {
+    "liquid": [
+      {
+        "date": "2024-10-01",
+        "m": "Oct 24",
+        "net": 83863
+      },
+      {
+        "date": "2024-11-01",
+        "m": "Nov 24",
+        "net": -1779
+      },
+      {
+        "date": "2024-12-01",
+        "m": "Dec 24",
+        "net": -66532
+      },
+      {
+        "date": "2025-01-01",
+        "m": "Jan 25",
+        "net": 91593
+      },
+      {
+        "date": "2025-02-01",
+        "m": "Feb 25",
+        "net": 4977
+      },
+      {
+        "date": "2025-03-01",
+        "m": "Mar 25",
+        "net": -133034
+      },
+      {
+        "date": "2025-04-01",
+        "m": "Apr 25",
+        "net": 118656
+      },
+      {
+        "date": "2025-05-01",
+        "m": "May 25",
+        "net": -40205
+      },
+      {
+        "date": "2025-06-01",
+        "m": "Jun 25",
+        "net": -25196
+      },
+      {
+        "date": "2025-07-01",
+        "m": "Jul 25",
+        "net": 39355
+      },
+      {
+        "date": "2025-08-01",
+        "m": "Aug 25",
+        "net": -13350
+      },
+      {
+        "date": "2025-09-01",
+        "m": "Sep 25",
+        "net": -66042
+      },
+      {
+        "date": "2025-10-01",
+        "m": "Oct 25",
+        "net": 89375
+      },
+      {
+        "date": "2025-11-01",
+        "m": "Nov 25",
+        "net": -14051
+      },
+      {
+        "date": "2025-12-01",
+        "m": "Dec 25",
+        "net": -47308
+      },
+      {
+        "date": "2026-01-01",
+        "m": "Jan 26",
+        "net": 30682
+      },
+      {
+        "date": "2026-02-01",
+        "m": "Feb 26",
+        "net": 59077
+      },
+      {
+        "date": "2026-03-01",
+        "m": "Mar 26",
+        "net": -134988
+      },
+      {
+        "date": "2026-04-01",
+        "m": "Apr 26",
+        "net": 165105
+      },
+      {
+        "date": "2026-05-01",
+        "m": "May 26",
+        "net": -29681
+      },
+      {
+        "date": "2026-06-01",
+        "m": "Jun 26",
+        "net": -42293
+      },
+      {
+        "date": "2026-07-01",
+        "m": "Jul 26",
+        "net": 119066
+      },
+      {
+        "date": "2026-08-01",
+        "m": "Aug 26",
+        "net": 19934
+      },
+      {
+        "date": "2026-09-01",
+        "m": "Sep 26",
+        "net": -95743
+      }
+    ],
+    "overnight": [
+      {
+        "date": "2024-10-01",
+        "m": "Oct 24",
+        "net": 25784
+      },
+      {
+        "date": "2024-11-01",
+        "m": "Nov 24",
+        "net": 2019
+      },
+      {
+        "date": "2024-12-01",
+        "m": "Dec 24",
+        "net": -22348
+      },
+      {
+        "date": "2025-01-01",
+        "m": "Jan 25",
+        "net": 18937
+      },
+      {
+        "date": "2025-02-01",
+        "m": "Feb 25",
+        "net": -2264
+      },
+      {
+        "date": "2025-03-01",
+        "m": "Mar 25",
+        "net": -30016
+      },
+      {
+        "date": "2025-04-01",
+        "m": "Apr 25",
+        "net": 23900
+      },
+      {
+        "date": "2025-05-01",
+        "m": "May 25",
+        "net": -8120
+      },
+      {
+        "date": "2025-06-01",
+        "m": "Jun 25",
+        "net": -8154
+      },
+      {
+        "date": "2025-07-01",
+        "m": "Jul 25",
+        "net": 8866
+      },
+      {
+        "date": "2025-08-01",
+        "m": "Aug 25",
+        "net": 4951
+      },
+      {
+        "date": "2025-09-01",
+        "m": "Sep 25",
+        "net": 4279
+      },
+      {
+        "date": "2025-10-01",
+        "m": "Oct 25",
+        "net": 24051
+      },
+      {
+        "date": "2025-11-01",
+        "m": "Nov 25",
+        "net": -37625
+      },
+      {
+        "date": "2025-12-01",
+        "m": "Dec 25",
+        "net": 254
+      },
+      {
+        "date": "2026-01-01",
+        "m": "Jan 26",
+        "net": 46280
+      },
+      {
+        "date": "2026-02-01",
+        "m": "Feb 26",
+        "net": -14006
+      },
+      {
+        "date": "2026-03-01",
+        "m": "Mar 26",
+        "net": -40228
+      },
+      {
+        "date": "2026-04-01",
+        "m": "Apr 26",
+        "net": 31420
+      },
+      {
+        "date": "2026-05-01",
+        "m": "May 26",
+        "net": -15525
+      },
+      {
+        "date": "2026-06-01",
+        "m": "Jun 26",
+        "net": -10580
+      },
+      {
+        "date": "2026-07-01",
+        "m": "Jul 26",
+        "net": 40413
+      },
+      {
+        "date": "2026-08-01",
+        "m": "Aug 26",
+        "net": -30654
+      },
+      {
+        "date": "2026-09-01",
+        "m": "Sep 26",
+        "net": -7281
+      }
+    ]
+  },
+  "forecast": {
+    "liquid": [
+      {
+        "category": "liquid",
+        "month": "Jan 2026",
+        "date": "2026-01-01",
+        "point": 80149.28032909501,
+        "lo80": 24927.196775413388,
+        "hi80": 135371.36388277664,
+        "lo95": -4305.608437307048,
+        "hi95": 164604.16909549705,
+        "buffer_p75": 0.0,
+        "buffer_p95": 0.0,
+        "actual": 30681.5539128496,
+        "abs_pct_err": 1.6122953406062026
+      },
+      {
+        "category": "liquid",
+        "month": "Feb 2026",
+        "date": "2026-02-01",
+        "point": 3058.452437167804,
+        "lo80": -62612.04223014511,
+        "hi80": 68728.94710448071,
+        "lo95": -97375.9021806009,
+        "hi95": 103492.80705493646,
+        "buffer_p75": 31504.398355797413,
+        "buffer_p95": 81228.71496317336,
+        "actual": 59077.394055441,
+        "abs_pct_err": 0.9482297334527381
+      },
+      {
+        "category": "liquid",
+        "month": "Mar 2026",
+        "date": "2026-03-01",
+        "point": -123644.68192561541,
+        "lo80": -196321.031031707,
+        "hi80": -50968.332819523814,
+        "lo95": -234793.56629787054,
+        "hi95": -12495.797553360317,
+        "buffer_p75": 161894.76399148995,
+        "buffer_p95": 216923.76615032734,
+        "actual": -134987.644659971,
+        "abs_pct_err": 0.08402963665991879
+      }
+    ],
+    "overnight": [
+      {
+        "category": "overnight",
+        "month": "Jan 2026",
+        "date": "2026-01-01",
+        "point": 14597.335512520483,
+        "lo80": -6498.806002854875,
+        "hi80": 35693.477027895846,
+        "lo95": -17666.42873587719,
+        "hi95": 46861.09976091815,
+        "buffer_p75": 0.0,
+        "buffer_p95": 12479.268987198393,
+        "actual": 46280.0491364803,
+        "abs_pct_err": 0.6845868622681708
+      },
+      {
+        "category": "overnight",
+        "month": "Feb 2026",
+        "date": "2026-02-01",
+        "point": -2708.4059203592624,
+        "lo80": -27796.08750954792,
+        "hi80": 22379.275668829396,
+        "lo95": -41076.703921324195,
+        "hi95": 35659.89208060566,
+        "buffer_p75": 15912.232081579616,
+        "buffer_p95": 34908.09664153964,
+        "actual": -14006.20691026,
+        "abs_pct_err": 0.8066281658044572
+      },
+      {
+        "category": "overnight",
+        "month": "Mar 2026",
+        "date": "2026-03-01",
+        "point": -22900.515009417413,
+        "lo80": -50664.59863137113,
+        "hi80": 4863.568612536306,
+        "lo95": -65362.016696759296,
+        "hi95": 19560.98667792446,
+        "buffer_p75": 37512.95069290608,
+        "buffer_p95": 58535.33055048995,
+        "actual": -40227.8993096799,
+        "abs_pct_err": 0.43073052775820836
+      }
+    ]
+  },
+  "backtest": [
+    {
+      "model": "ens_growth_ar1",
+      "category": "liquid",
+      "WAPE": 0.457,
+      "MAPE": 0.668,
+      "MAE_cr": 29174.038,
+      "pinball": 6290.933,
+      "cov80": 0.833,
+      "cov95": 1.0
+    },
+    {
+      "model": "ar1_calendar",
+      "category": "liquid",
+      "WAPE": 0.473,
+      "MAPE": 0.551,
+      "MAE_cr": 30182.802,
+      "pinball": 6638.453,
+      "cov80": 0.792,
+      "cov95": 0.917
+    },
+    {
+      "model": "seasonal_naive",
+      "category": "liquid",
+      "WAPE": 0.52,
+      "MAPE": 0.749,
+      "MAE_cr": 33198.867,
+      "pinball": 7124.718,
+      "cov80": 0.875,
+      "cov95": 1.0
+    },
+    {
+      "model": "seasonal_naive_growth",
+      "category": "liquid",
+      "WAPE": 0.524,
+      "MAPE": 0.778,
+      "MAE_cr": 33424.858,
+      "pinball": 7440.728,
+      "cov80": 0.833,
+      "cov95": 0.958
+    },
+    {
+      "model": "sarimax",
+      "category": "liquid",
+      "WAPE": 0.595,
+      "MAPE": 0.738,
+      "MAE_cr": 37991.917,
+      "pinball": 8051.383,
+      "cov80": 0.792,
+      "cov95": 0.958
+    },
+    {
+      "model": "ets",
+      "category": "liquid",
+      "WAPE": 0.652,
+      "MAPE": 0.774,
+      "MAE_cr": 41627.031,
+      "pinball": 8749.987,
+      "cov80": 0.667,
+      "cov95": 0.875
+    },
+    {
+      "model": "lgbm_cqr",
+      "category": "liquid",
+      "WAPE": 0.698,
+      "MAPE": 0.886,
+      "MAE_cr": 44525.179,
+      "pinball": 10142.831,
+      "cov80": 0.708,
+      "cov95": 0.875
+    },
+    {
+      "model": "lgbm_quantile",
+      "category": "liquid",
+      "WAPE": 0.608,
+      "MAPE": 0.72,
+      "MAE_cr": 38776.956,
+      "pinball": 12345.437,
+      "cov80": 0.292,
+      "cov95": 0.5
+    },
+    {
+      "model": "ens_growth_ar1",
+      "category": "overnight",
+      "WAPE": 0.726,
+      "MAPE": 0.566,
+      "MAE_cr": 13853.674,
+      "pinball": 3032.666,
+      "cov80": 0.75,
+      "cov95": 0.958
+    },
+    {
+      "model": "seasonal_naive_growth",
+      "category": "overnight",
+      "WAPE": 0.802,
+      "MAPE": 0.58,
+      "MAE_cr": 15307.646,
+      "pinball": 3281.561,
+      "cov80": 0.75,
+      "cov95": 0.917
+    },
+    {
+      "model": "seasonal_naive",
+      "category": "overnight",
+      "WAPE": 0.828,
+      "MAPE": 0.601,
+      "MAE_cr": 15804.117,
+      "pinball": 3336.726,
+      "cov80": 0.667,
+      "cov95": 0.917
+    },
+    {
+      "model": "sarimax",
+      "category": "overnight",
+      "WAPE": 0.795,
+      "MAPE": 0.695,
+      "MAE_cr": 15174.075,
+      "pinball": 3418.485,
+      "cov80": 0.625,
+      "cov95": 0.792
+    },
+    {
+      "model": "ar1_calendar",
+      "category": "overnight",
+      "WAPE": 0.804,
+      "MAPE": 0.688,
+      "MAE_cr": 15341.248,
+      "pinball": 3755.839,
+      "cov80": 0.667,
+      "cov95": 0.792
+    },
+    {
+      "model": "lgbm_cqr",
+      "category": "overnight",
+      "WAPE": 0.954,
+      "MAPE": 0.894,
+      "MAE_cr": 18205.607,
+      "pinball": 3798.148,
+      "cov80": 0.708,
+      "cov95": 0.792
+    },
+    {
+      "model": "ets",
+      "category": "overnight",
+      "WAPE": 0.919,
+      "MAPE": 0.803,
+      "MAE_cr": 17527.852,
+      "pinball": 4203.968,
+      "cov80": 0.458,
+      "cov95": 0.75
+    },
+    {
+      "model": "lgbm_quantile",
+      "category": "overnight",
+      "WAPE": 0.803,
+      "MAPE": 0.771,
+      "MAE_cr": 15316.786,
+      "pinball": 5893.18,
+      "cov80": 0.292,
+      "cov95": 0.333
+    }
+  ],
+  "decision": [
+    {
+      "category": "liquid",
+      "cost_p75": 485095.0,
+      "nshort_p75": 1,
+      "avgbuf_p75": 45216.7,
+      "cost_p90": 804239.8,
+      "nshort_p90": 1,
+      "avgbuf_p90": 62980.1,
+      "cost_p95": 1093428.4,
+      "nshort_p95": 0,
+      "avgbuf_p95": 75151.3,
+      "cost_p99": 1735742.8,
+      "nshort_p99": 0,
+      "avgbuf_p99": 101914.4,
+      "cost_naive": 557526.4,
+      "nshort_naive": 8,
+      "avgbuf_naive": 29060.4,
+      "best_rule": "p75",
+      "cost_reduction_vs_naive_%": 13.0,
+      "pnl_cr_p75": 606.4,
+      "pnl_cr_p90": 1005.3,
+      "pnl_cr_p95": 1366.8,
+      "pnl_cr_p99": 2169.7,
+      "pnl_cr_naive": 696.9
+    },
+    {
+      "category": "overnight",
+      "cost_p75": 348770.6,
+      "nshort_p75": 6,
+      "avgbuf_p75": 12046.4,
+      "cost_p90": 383549.7,
+      "nshort_p90": 3,
+      "avgbuf_p90": 20639.4,
+      "cost_p95": 459132.0,
+      "nshort_p95": 2,
+      "avgbuf_p95": 26285.6,
+      "cost_p99": 672347.5,
+      "nshort_p99": 0,
+      "avgbuf_p99": 37464.5,
+      "cost_naive": 545650.7,
+      "nshort_naive": 10,
+      "avgbuf_naive": 6190.4,
+      "best_rule": "p75",
+      "cost_reduction_vs_naive_%": 36.1,
+      "pnl_cr_p75": 436.0,
+      "pnl_cr_p90": 479.4,
+      "pnl_cr_p95": 573.9,
+      "pnl_cr_p99": 840.4,
+      "pnl_cr_naive": 682.1
+    }
+  ],
+  "drivers": {
+    "liquid": [
+      {
+        "driver": "advance_tax",
+        "coef": -45530.46,
+        "t": -3.06,
+        "p": 0.0,
+        "sig": "***",
+        "lgbm_importance": 0.348
+      },
+      {
+        "driver": "fy_end",
+        "coef": -43193.7,
+        "t": -2.29,
+        "p": 0.02,
+        "sig": "**",
+        "lgbm_importance": 0.022
+      },
+      {
+        "driver": "q_end_h2",
+        "coef": -14684.63,
+        "t": -1.3,
+        "p": 0.19,
+        "sig": 0,
+        "lgbm_importance": 0.001
+      },
+      {
+        "driver": "april_rebound",
+        "coef": 22463.65,
+        "t": 1.97,
+        "p": 0.05,
+        "sig": "**",
+        "lgbm_importance": 0.015
+      },
+      {
+        "driver": "nifty_ret_1m",
+        "coef": 2589.83,
+        "t": 0.03,
+        "p": 0.98,
+        "sig": 0,
+        "lgbm_importance": 0.03
+      },
+      {
+        "driver": "nifty_ret_3m",
+        "coef": -7042.3,
+        "t": -0.14,
+        "p": 0.88,
+        "sig": 0,
+        "lgbm_importance": 0.069
+      },
+      {
+        "driver": "repo_rate",
+        "coef": 6607.44,
+        "t": 0.6,
+        "p": 0.55,
+        "sig": 0,
+        "lgbm_importance": 0.026
+      },
+      {
+        "driver": "repo_chg_3m",
+        "coef": -4416.67,
+        "t": -0.33,
+        "p": 0.74,
+        "sig": 0,
+        "lgbm_importance": 0.0
+      },
+      {
+        "driver": "sys_liq",
+        "coef": 1639.21,
+        "t": 0.44,
+        "p": 0.66,
+        "sig": 0,
+        "lgbm_importance": 0.06
+      },
+      {
+        "driver": "sys_liq_chg_3m",
+        "coef": -1941.08,
+        "t": -0.46,
+        "p": 0.64,
+        "sig": 0,
+        "lgbm_importance": 0.055
+      },
+      {
+        "driver": "net_lag1",
+        "coef": -0.31,
+        "t": -4.84,
+        "p": 0.0,
+        "sig": "***",
+        "lgbm_importance": 0.193
+      },
+      {
+        "driver": "net_lag12",
+        "coef": 0.16,
+        "t": 1.31,
+        "p": 0.19,
+        "sig": 0,
+        "lgbm_importance": 0.18
+      }
+    ],
+    "overnight": [
+      {
+        "driver": "advance_tax",
+        "coef": -11451.31,
+        "t": -2.24,
+        "p": 0.02,
+        "sig": "**",
+        "lgbm_importance": 0.035
+      },
+      {
+        "driver": "fy_end",
+        "coef": -7664.41,
+        "t": -1.17,
+        "p": 0.24,
+        "sig": 0,
+        "lgbm_importance": 0.059
+      },
+      {
+        "driver": "q_end_h2",
+        "coef": 4523.85,
+        "t": 1.03,
+        "p": 0.3,
+        "sig": 0,
+        "lgbm_importance": 0.002
+      },
+      {
+        "driver": "april_rebound",
+        "coef": 5909.02,
+        "t": 0.85,
+        "p": 0.4,
+        "sig": 0,
+        "lgbm_importance": 0.005
+      },
+      {
+        "driver": "nifty_ret_1m",
+        "coef": -22059.84,
+        "t": -0.56,
+        "p": 0.58,
+        "sig": 0,
+        "lgbm_importance": 0.075
+      },
+      {
+        "driver": "nifty_ret_3m",
+        "coef": 268.11,
+        "t": 0.02,
+        "p": 0.99,
+        "sig": 0,
+        "lgbm_importance": 0.073
+      },
+      {
+        "driver": "repo_rate",
+        "coef": -5967.77,
+        "t": -1.68,
+        "p": 0.09,
+        "sig": "*",
+        "lgbm_importance": 0.08
+      },
+      {
+        "driver": "repo_chg_3m",
+        "coef": 545.54,
+        "t": 0.12,
+        "p": 0.9,
+        "sig": 0,
+        "lgbm_importance": 0.006
+      },
+      {
+        "driver": "sys_liq",
+        "coef": -1593.5,
+        "t": -1.26,
+        "p": 0.21,
+        "sig": 0,
+        "lgbm_importance": 0.105
+      },
+      {
+        "driver": "sys_liq_chg_3m",
+        "coef": -190.84,
+        "t": -0.12,
+        "p": 0.9,
+        "sig": 0,
+        "lgbm_importance": 0.071
+      },
+      {
+        "driver": "net_lag1",
+        "coef": -0.47,
+        "t": -6.24,
+        "p": 0.0,
+        "sig": "***",
+        "lgbm_importance": 0.294
+      },
+      {
+        "driver": "net_lag12",
+        "coef": 0.28,
+        "t": 1.69,
+        "p": 0.09,
+        "sig": "*",
+        "lgbm_importance": 0.196
+      }
+    ]
+  }
+}
